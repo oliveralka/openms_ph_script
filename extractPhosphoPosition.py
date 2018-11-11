@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[117]:
+# In[197]:
 
 
 # packages
 import os
-import sys #not sure if needed with click
 import click
-import getopt #not sure if needed
 import shutil
 import csv
 import re
@@ -16,7 +14,7 @@ import pandas as pd
 from Bio import SeqIO
 
 
-# In[118]:
+# In[198]:
 
 
 # classes and functions
@@ -31,7 +29,7 @@ class SeqContainer:
     ph_pep_aa = []
     ph_pep_pos = []
     ph_prot_pos = []
-
+    
 # fills inital SeqContainer datastructure
 # returns list of SeqContainer [0] and list of modification [1]
 def buildSeqContainer(db_path, analysis_path):
@@ -193,44 +191,18 @@ def buildDataFrameFromContainer(l_container):
     return df_container
 
 
-# In[119]:
+# In[199]:
 
 
-def main():
-    
-    database = "/Volumes/elements/Ph_analysis/database/database/2018/swissprot_human_crap_decoy_20181017.fasta" 
-    analysis = "/Volumes/elements/Ph_analysis/results/5min_HILIC/ConsensusMapNormalizer/ConsensusMapNormalizer.csv"
-    output = "/Volumes/elements/Ph_analysis/results/5min_HILIC/ConsensusMapNormalizer/ConsensusMapNormalizer_output.csv"
-    output_new = "/Volumes/elements/Ph_analysis/results/5min_HILIC/ConsensusMapNormalizer/ConsensusMapNormalizer_new_output.csv"
-    
-    # how to make command line tool with input 
-    '''
-    analysis = ''
-    database = ''
-    output = ''
-    
-    try:
-      opts, args = getopt.getopt(argv,"hi:o:",["analysis=","database=","output="])
-    except getopt.GetoptError:
-      print 'extractPhosphoPosition.py -a <analysis> -d <database> -o <output>'
-      sys.exit(2)
-    for opt, arg in opts:
-      if opt == '-h':
-         print 'extractPhosphoPosition.py -a <analysiså> -d <database> -o <output>'
-         sys.exit()
-      elif opt in ("-a", "--analysis"):
-         analysis = arg
-      elif opt in ("-d", "--database"):
-         database = arg
-      elif opt in ("-o", "--output"):
-         output = arg
-    print('Input file is "', analysis)
-    print('Database file is "', database)
-    print('Output file is "', output)
-    '''
+# command line tool options
+@click.command()
+@click.option('--analysis', '-in', envvar = 'analysis', multiple = False, type = click.Path(), help = 'TMT10Plex,Phospho data exported from ConsensusMapNormalizer (.csv)')
+@click.option('--database', '-db', envvar = 'database', multiple = False, type = click.Path(), help = 'Database used for Peptide search (.fasta)')
+@click.option('--output', '-out', envvar = 'output', multiple = False, type = click.Path(), help = 'Path to save the output file')
+
+def main(database, analysis, output):
     
     print("Starting the extraction")
-
     print("Building the datastructure")
     # build the inital SeqContainer datastructure
     l_container = buildSeqContainer(database, analysis)
@@ -255,18 +227,15 @@ def main():
     df_out.sort_values('rt_cf')
     
     # write output
-    df_new.to_csv(output_new, sep=',', encoding='utf-8')
     df_out.to_csv(output, sep=',', encoding='utf-8')
-    
     print("Done")
     
     return 0
 
 
-# In[120]:
+# In[200]:
 
 
 if __name__ == "__main__":
     main()
-    #main(sys:argv[1:])
 
