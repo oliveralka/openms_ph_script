@@ -32,9 +32,9 @@ class SeqContainer:
     
 # fills inital SeqContainer datastructure
 # returns list of SeqContainer [0] and list of modification [1]
-def buildSeqContainer(db_path, analysis_path):
+def buildSeqContainer(db, analysis):
     # read input 
-    df = pd.read_csv(analysis_path)
+    df = pd.read_csv(analysis)
     seq_col = df.sequence
     accession_col = df.accessions
     rt_col = df.rt_cf
@@ -70,7 +70,7 @@ def buildSeqContainer(db_path, analysis_path):
             
     # dictionary accession sequence (fasta)
     d_id_seq = {}
-    for seq_record in SeqIO.parse(db_path, "fasta"):
+    for seq_record in SeqIO.parse(db, "fasta"):
         d_id_seq[seq_record.id] = seq_record.seq
         
     # combine the list and dict in class SeqContainer 
@@ -217,8 +217,8 @@ def main(database, analysis, output):
     df_new = buildDataFrameFromContainer(l_container)
     df_new.sort_values('rt_cf')
     
-    # analysis_path dataframe
-    df_in = pd.read_csv(analysis_path)
+    # analysis dataframe
+    df_in = pd.read_csv(analysis)
     df_in.sort_values('rt_cf')
     
     print("Merging in progress")
